@@ -5,11 +5,15 @@ import { UsersController } from './users/users.controller';
 import { UsersService } from './users/users.service';
 import { LoggerMiddleware } from './conception/middleware';
 import { PrismaService } from './prisma.service';
+import { ScheduleController } from './schedule/schedule.controller';
+import { ScheduleService } from './schedule/schedule.service';
+import { ClientsController } from './clients/clients.controller';
+import { ClientsService } from './clients/clients.service';
 
 @Module({
   imports: [],
-  controllers: [AppController, UsersController],
-  providers: [AppService, UsersService, PrismaService],
+  controllers: [AppController, UsersController, ScheduleController, ClientsController],
+  providers: [AppService, UsersService, PrismaService, ScheduleService, ClientsService],
 })
 export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer): any {
