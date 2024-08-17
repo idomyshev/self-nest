@@ -1,9 +1,14 @@
 import { Injectable } from '@nestjs/common';
-import { IUser } from '../types/users';
+import { PrismaService } from '../prisma.service';
 
 @Injectable()
 export class UsersService {
-  findAll(): IUser[] {
-    return [{ email: 'iadomyshev@gmail.com' }];
+  constructor(private readonly prisma: PrismaService) {}
+  async findAll() {
+    return this.prisma.user.findMany();
   }
+
+  // create(dto: CreateFlowersDto) {
+  //   return this.prisma.users;
+  // }
 }

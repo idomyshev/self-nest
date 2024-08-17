@@ -4,11 +4,12 @@ import { AppService } from './app.service';
 import { UsersController } from './users/users.controller';
 import { UsersService } from './users/users.service';
 import { LoggerMiddleware } from './conception/middleware';
+import { PrismaService } from './prisma.service';
 
 @Module({
   imports: [],
   controllers: [AppController, UsersController],
-  providers: [AppService, UsersService],
+  providers: [AppService, UsersService, PrismaService],
 })
 export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer): any {
