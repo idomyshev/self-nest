@@ -20,10 +20,6 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
         },
       }),
     }),
-    // JwtModule.register({
-    //   secret: 'yourSecretKey--', // Change this to a more secure key and keep it secret
-    //   signOptions: { expiresIn: '30d' }, // Token expires in 60 minutes
-    // }),
   ],
   providers: [AuthService, JwtStrategy],
   controllers: [AuthController],
