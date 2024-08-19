@@ -3,10 +3,10 @@ import { PrismaService } from '../prisma.service';
 import { TimeSlot } from '@prisma/client';
 
 @Injectable()
-export class ScheduleService {
+export class TimeSlotsService {
   constructor(private readonly prisma: PrismaService) {}
 
-  async findAllTimeSlots() {
+  async getTimeSlots() {
     return this.prisma.timeSlot.findMany({
       // TODO
       //where: { userId: auth.user.id },

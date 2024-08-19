@@ -5,12 +5,12 @@ import { UsersController } from './users/users.controller';
 import { UsersService } from './users/users.service';
 import { LoggerMiddleware } from './conception/middleware';
 import { PrismaService } from './prisma.service';
-import { ScheduleController } from './schedule/schedule.controller';
-import { ScheduleService } from './schedule/schedule.service';
 import { ClientsController } from './clients/clients.controller';
 import { ClientsService } from './clients/clients.service';
 import { AuthModule } from './auth/auth.module';
 import { ConfigModule } from '@nestjs/config';
+import { TimeSlotsController } from './time-slot/time-slots.controller';
+import { TimeSlotsService } from './time-slot/time-slots.service';
 
 @Module({
   imports: [
@@ -22,15 +22,15 @@ import { ConfigModule } from '@nestjs/config';
   controllers: [
     AppController,
     UsersController,
-    ScheduleController,
     ClientsController,
+    TimeSlotsController,
   ],
   providers: [
     AppService,
     UsersService,
     PrismaService,
-    ScheduleService,
     ClientsService,
+    TimeSlotsService,
   ],
 })
 export class AppModule implements NestModule {
