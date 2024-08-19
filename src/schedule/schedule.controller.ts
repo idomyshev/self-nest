@@ -6,9 +6,7 @@ import {
   Param,
   Post,
   Put,
-  UseGuards,
 } from '@nestjs/common';
-import { AuthGuard } from '../conception/guard';
 import { ScheduleService } from './schedule.service';
 import { IdParamDto } from '../dto/misc.dto';
 import { TimeSlotCreateDto } from '../dto/schedule.dto';
@@ -18,13 +16,11 @@ export class ScheduleController {
   constructor(private readonly scheduleService: ScheduleService) {}
 
   @Get('timeSlots')
-  @UseGuards(AuthGuard)
   getTimeSlots() {
     return this.scheduleService.findAllTimeSlots();
   }
 
   @Post('timeSlots')
-  @UseGuards(AuthGuard)
   createTimeSlot(@Body() body: TimeSlotCreateDto) {
     console.log('BODY', body);
     return this.scheduleService.createTimeSlot({
@@ -34,7 +30,6 @@ export class ScheduleController {
   }
 
   @Put('timeSlots/:id')
-  @UseGuards(AuthGuard)
   updateTimeSlot(@Param() params: IdParamDto, @Body() body: TimeSlotCreateDto) {
     console.log('BODY', body);
     return this.scheduleService.updateTimeSlot(params.id, {
@@ -44,7 +39,6 @@ export class ScheduleController {
   }
 
   @Delete('timeSlots/:id')
-  @UseGuards(AuthGuard)
   async deleteTimeSlot(@Param() params: IdParamDto) {
     return await this.scheduleService.deleteTimeSlot(params.id);
   }

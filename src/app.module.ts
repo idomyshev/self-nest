@@ -9,11 +9,29 @@ import { ScheduleController } from './schedule/schedule.controller';
 import { ScheduleService } from './schedule/schedule.service';
 import { ClientsController } from './clients/clients.controller';
 import { ClientsService } from './clients/clients.service';
+import { AuthModule } from './auth/auth.module';
+import { ConfigModule } from '@nestjs/config';
 
 @Module({
-  imports: [],
-  controllers: [AppController, UsersController, ScheduleController, ClientsController],
-  providers: [AppService, UsersService, PrismaService, ScheduleService, ClientsService],
+  imports: [
+    AuthModule,
+    ConfigModule.forRoot({
+      isGlobal: true, // This makes the configuration globally available in the application
+    }),
+  ],
+  controllers: [
+    AppController,
+    UsersController,
+    ScheduleController,
+    ClientsController,
+  ],
+  providers: [
+    AppService,
+    UsersService,
+    PrismaService,
+    ScheduleService,
+    ClientsService,
+  ],
 })
 export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer): any {
