@@ -22,6 +22,17 @@ export class ScheduleService {
     });
   }
 
+  async updateTimeSlot(id: string, data: TimeSlot) {
+    return this.prisma.timeSlot.update({
+      // TODO add userId: auth.user.id to data.
+      where: {
+        id,
+        // TODO userId: auth.user.id
+      },
+      data,
+    });
+  }
+
   async deleteTimeSlot(id: string) {
     const deletedItem = await this.prisma.timeSlot.delete({
       where: {

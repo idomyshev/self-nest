@@ -5,6 +5,7 @@ import {
   Get,
   Param,
   Post,
+  Put,
   UseGuards,
 } from '@nestjs/common';
 import { AuthGuard } from '../conception/guard';
@@ -27,6 +28,16 @@ export class ScheduleController {
   createTimeSlot(@Body() body: TimeSlotCreateDto) {
     console.log('BODY', body);
     return this.scheduleService.createTimeSlot({
+      ...(body as any),
+      userId: 'c80e9b4b-9de6-4403-9c5a-a0ced1bacf0c',
+    });
+  }
+
+  @Put('timeSlots/:id')
+  @UseGuards(AuthGuard)
+  updateTimeSlot(@Param() params: IdParamDto, @Body() body: TimeSlotCreateDto) {
+    console.log('BODY', body);
+    return this.scheduleService.updateTimeSlot(params.id, {
       ...(body as any),
       userId: 'c80e9b4b-9de6-4403-9c5a-a0ced1bacf0c',
     });
