@@ -11,6 +11,8 @@ import { AuthModule } from './auth/auth.module';
 import { ConfigModule } from '@nestjs/config';
 import { TimeSlotsController } from './time-slot/time-slots.controller';
 import { TimeSlotsService } from './time-slot/time-slots.service';
+import { AuthService } from './auth/auth.service';
+import { JwtService } from '@nestjs/jwt';
 
 @Module({
   imports: [

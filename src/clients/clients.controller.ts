@@ -1,20 +1,20 @@
 import { Controller, Get, Param, UseGuards } from '@nestjs/common';
 import { IdParamDto } from '../dto/misc.dto';
 import { ClientsService } from './clients.service';
-import { AuthGuard } from '@nestjs/passport';
+import { JwtAuthGuard } from '../jwt-auth/jwt-auth.guard';
 
 @Controller('clients')
 export class ClientsController {
   constructor(private readonly clientService: ClientsService) {}
 
   @Get()
-  @UseGuards(AuthGuard('jwt'))
+  @UseGuards(JwtAuthGuard)
   getClients() {
     return this.clientService.findAll();
   }
 
   @Get(':id')
-  @UseGuards(AuthGuard('jwt'))
+  @UseGuards(JwtAuthGuard)
   async getClient(@Param() params: IdParamDto) {
     return await this.clientService.findOne(params.id);
   }

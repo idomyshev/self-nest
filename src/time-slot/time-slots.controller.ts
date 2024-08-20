@@ -11,20 +11,20 @@ import {
 import { TimeSlotCreateDto } from '../dto/schedule.dto';
 import { IdParamDto } from '../dto/misc.dto';
 import { TimeSlotsService } from './time-slots.service';
-import { AuthGuard } from '@nestjs/passport';
+import { JwtAuthGuard } from '../jwt-auth/jwt-auth.guard';
 
 @Controller('time-slots')
 export class TimeSlotsController {
   constructor(private readonly timeSlotService: TimeSlotsService) {}
 
   @Get()
-  @UseGuards(AuthGuard('jwt'))
+  @UseGuards(JwtAuthGuard)
   getTimeSlots() {
     return this.timeSlotService.getTimeSlots();
   }
 
   @Post()
-  @UseGuards(AuthGuard('jwt'))
+  @UseGuards(JwtAuthGuard)
   createTimeSlot(@Body() body: TimeSlotCreateDto) {
     // TODO User real user id
     return this.timeSlotService.createTimeSlot({
@@ -34,7 +34,7 @@ export class TimeSlotsController {
   }
 
   @Put(':id')
-  @UseGuards(AuthGuard('jwt'))
+  @UseGuards(JwtAuthGuard)
   updateTimeSlot(@Param() params: IdParamDto, @Body() body: TimeSlotCreateDto) {
     console.log('BODY', body);
     return this.timeSlotService.updateTimeSlot(params.id, {
@@ -44,7 +44,7 @@ export class TimeSlotsController {
   }
 
   @Delete(':id')
-  @UseGuards(AuthGuard('jwt'))
+  @UseGuards(JwtAuthGuard)
   async deleteTimeSlot(@Param() params: IdParamDto) {
     return await this.timeSlotService.deleteTimeSlot(params.id);
   }

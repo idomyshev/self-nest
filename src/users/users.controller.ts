@@ -8,7 +8,7 @@ import {
 import { UsersService } from './users.service';
 import { LoggingInterceptor } from '../conception/interceptor';
 import { IdParamDto } from '../dto/misc.dto';
-import { AuthGuard } from '@nestjs/passport';
+import { JwtAuthGuard } from '../jwt-auth/jwt-auth.guard';
 
 @Controller('users')
 @UseInterceptors(LoggingInterceptor)
@@ -16,14 +16,14 @@ export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
   @Get()
-  @UseGuards(AuthGuard('jwt'))
+  @UseGuards(JwtAuthGuard)
   getUsers() {
     return this.usersService.findAll();
   }
 
   @Get(':id')
-  @UseGuards(AuthGuard('jwt'))
+  @UseGuards(JwtAuthGuard)
   async getUser(@Param() params: IdParamDto) {
-    return await this.usersService.findOne(params.id);
+    return await this.usersService.findOne({ id: params.id }, ['hash']);
   }
 }

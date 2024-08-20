@@ -12,12 +12,14 @@ export class UsersService {
     });
   }
 
-  async findOne(id: string) {
+  async findOne(where: any, skipFields?: string[]) {
     try {
-      const user = await this.prisma.user.findFirst({ where: { id } });
+      const user = await this.prisma.user.findFirst({ where });
 
-      if (user) {
-        delete user.hash;
+      if (user && skipFields?.length) {
+        for (const field of skipFields) {
+          delete user[field];
+        }
       }
 
       return user;

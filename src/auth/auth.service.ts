@@ -1,18 +1,27 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, UnauthorizedException } from '@nestjs/common';
+import * as bcrypt from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';
+import { PrismaService } from '../prisma.service';
 
 @Injectable()
 export class AuthService {
-  constructor(private readonly jwtService: JwtService) {}
+  constructor(
+    private readonly jwtService: JwtService,
+    private prismaService: PrismaService,
+  ) {}
 
-  async validateUser(username: string, pass: string): Promise<any> {
-    // Add logic to validate the user (e.g., check username and password against a database)
-    const user = { userId: 1, username: 'john', password: 'changeme' }; // Dummy user for example
-    if (user && user.password === pass) {
-      const { password, ...result } = user;
-      return result;
+  async validateUser(email: string, pass: string): Promise<any> {
+    const user = await this.prismaService.user.findFirst({
+      where: {
+        email,
+      },
+    });
+
+    if (user && (await bcrypt.compare(pass, user.hash))) {
+      return user;
     }
-    return null;
+
+    throw new UnauthorizedException();
   }
 
   async login(user: any) {
