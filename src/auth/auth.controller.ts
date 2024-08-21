@@ -12,10 +12,6 @@ export class AuthController {
       req.body.password,
     );
 
-    if (!user) {
-      return { message: 'Invalid credentials' };
-    }
-
     return this.authService.login(user);
   }
 }
