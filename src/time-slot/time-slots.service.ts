@@ -6,10 +6,9 @@ import { TimeSlot } from '@prisma/client';
 export class TimeSlotsService {
   constructor(private readonly prisma: PrismaService) {}
 
-  async getTimeSlots() {
+  async getTimeSlots(userId: string) {
     return this.prisma.timeSlot.findMany({
-      // TODO
-      //where: { userId: auth.user.id },
+      where: { userId },
       orderBy: [{ date: 'asc' }, { time: 'asc' }],
       include: { client: true },
     });
@@ -17,25 +16,24 @@ export class TimeSlotsService {
 
   async createTimeSlot(data: TimeSlot) {
     return this.prisma.timeSlot.create({
-      // TODO add userId: auth.user.id to data.
       data,
     });
   }
 
-  async updateTimeSlot(id: string, data: TimeSlot) {
+  async updateTimeSlot(userId: string, id: string, data: TimeSlot) {
     return this.prisma.timeSlot.update({
-      // TODO add userId: auth.user.id to data.
       where: {
+        userId,
         id,
-        // TODO userId: auth.user.id
       },
       data,
     });
   }
 
-  async deleteTimeSlot(id: string) {
+  async deleteTimeSlot(userId: string, id: string) {
     const deletedItem = await this.prisma.timeSlot.delete({
       where: {
+        userId,
         id,
       },
     });

@@ -1,5 +1,4 @@
 import {
-  IsDate,
   IsInt,
   IsNotEmpty,
   IsOptional,
@@ -24,4 +23,10 @@ export class TimeSlotCreateDto {
   @IsUUID()
   @IsOptional()
   clientId: string;
+}
+
+export class ClientCreateDto {
+  @IsString()
+  @Length(1, 50)
+  name: string;
 }

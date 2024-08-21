@@ -6,6 +6,7 @@ import {
   Param,
   Post,
   Put,
+  Request,
   UseGuards,
 } from '@nestjs/common';
 import { TimeSlotCreateDto } from '../dto/schedule.dto';
@@ -19,33 +20,34 @@ export class TimeSlotsController {
 
   @Get()
   @UseGuards(JwtAuthGuard)
-  getTimeSlots() {
-    return this.timeSlotService.getTimeSlots();
+  getTimeSlots(@Request() req) {
+    return this.timeSlotService.getTimeSlots(req.user.id);
   }
 
   @Post()
   @UseGuards(JwtAuthGuard)
-  createTimeSlot(@Body() body: TimeSlotCreateDto) {
-    // TODO User real user id
+  createTimeSlot(@Body() body: TimeSlotCreateDto, @Request() req) {
     return this.timeSlotService.createTimeSlot({
       ...(body as any),
-      userId: 'c80e9b4b-9de6-4403-9c5a-a0ced1bacf0c',
+      userId: req.user.id,
     });
   }
 
   @Put(':id')
   @UseGuards(JwtAuthGuard)
-  updateTimeSlot(@Param() params: IdParamDto, @Body() body: TimeSlotCreateDto) {
-    console.log('BODY', body);
-    return this.timeSlotService.updateTimeSlot(params.id, {
+  updateTimeSlot(
+    @Param() params: IdParamDto,
+    @Body() body: TimeSlotCreateDto,
+    @Request() req,
+  ) {
+    return this.timeSlotService.updateTimeSlot(req.user.id, params.id, {
       ...(body as any),
-      userId: 'c80e9b4b-9de6-4403-9c5a-a0ced1bacf0c',
     });
   }
 
   @Delete(':id')
   @UseGuards(JwtAuthGuard)
-  async deleteTimeSlot(@Param() params: IdParamDto) {
-    return await this.timeSlotService.deleteTimeSlot(params.id);
+  async deleteTimeSlot(@Param() params: IdParamDto, @Request() req) {
+    return await this.timeSlotService.deleteTimeSlot(req.user.id, params.id);
   }
 }
