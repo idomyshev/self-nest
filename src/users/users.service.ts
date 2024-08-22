@@ -13,18 +13,16 @@ export class UsersService {
   }
 
   async findOne(where: any, skipFields?: string[]) {
-    try {
-      const user = await this.prisma.user.findFirst({ where });
+    const user = await this.prisma.user.findFirst({ where });
 
-      if (user && skipFields?.length) {
-        for (const field of skipFields) {
-          delete user[field];
-        }
+    if (user && skipFields?.length) {
+      for (const field of skipFields) {
+        delete user[field];
       }
-
-      return user;
-    } catch {
-      throw new Error("Couldn't get user from database");
     }
+
+    console.log('USER', user);
+
+    return user;
   }
 }

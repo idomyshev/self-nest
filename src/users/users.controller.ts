@@ -1,6 +1,7 @@
 import {
   Controller,
   Get,
+  NotFoundException,
   Param,
   UseGuards,
   UseInterceptors,
@@ -24,6 +25,12 @@ export class UsersController {
   @Get(':id')
   @UseGuards(JwtAuthGuard)
   async getUser(@Param() params: IdParamDto) {
-    return await this.usersService.findOne({ id: params.id }, ['hash']);
+    const user = await this.usersService.findOne({ id: params.id }, ['hash']);
+
+    if (!user) {
+      throw new NotFoundException();
+    }
+
+    return user;
   }
 }

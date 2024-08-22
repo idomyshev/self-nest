@@ -12,7 +12,7 @@ import {
 import { IdParamDto } from '../dto/misc.dto';
 import { ClientsService } from './clients.service';
 import { JwtAuthGuard } from '../jwt-auth/jwt-auth.guard';
-import { ClientCreateDto, TimeSlotCreateDto } from '../dto/schedule.dto';
+import { ClientCreateDto } from '../dto/schedule.dto';
 
 @Controller('clients')
 export class ClientsController {

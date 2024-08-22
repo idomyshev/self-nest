@@ -1,10 +1,6 @@
-import {
-  ConflictException,
-  Injectable,
-  NotFoundException,
-} from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma.service';
-import { Client, Prisma } from '@prisma/client';
+import { Client } from '@prisma/client';
 
 @Injectable()
 export class ClientsService {
@@ -19,39 +15,19 @@ export class ClientsService {
   }
 
   async createClient(data: Client) {
-    try {
-      return await this.prisma.client.create({
-        data,
-      });
-    } catch (error) {
-      if (error instanceof Prisma.PrismaClientKnownRequestError) {
-        if (error.code === 'P2002') {
-          throw new ConflictException('User with this email already exists');
-        }
-
-        throw error;
-      }
-    }
+    return this.prisma.client.create({
+      data,
+    });
   }
 
   async updateClient(userId: string, id: string, data: Client) {
-    try {
-      return await this.prisma.client.update({
-        where: {
-          userId,
-          id,
-        },
-        data,
-      });
-    } catch (error) {
-      if (error instanceof Prisma.PrismaClientKnownRequestError) {
-        if (error.code === 'P2025') {
-          throw new NotFoundException();
-        }
-
-        throw error;
-      }
-    }
+    return this.prisma.client.update({
+      where: {
+        userId,
+        id,
+      },
+      data,
+    });
   }
 
   async deleteClient(userId: string, id: string) {
