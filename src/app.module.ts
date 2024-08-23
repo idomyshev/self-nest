@@ -13,6 +13,8 @@ import { TimeSlotsController } from './time-slot/time-slots.controller';
 import { TimeSlotsService } from './time-slot/time-slots.service';
 import { AuthService } from './auth/auth.service';
 import { JwtService } from '@nestjs/jwt';
+import { FileStorageController } from './file-storage/file-storage.controller';
+import { FileStorageService } from './file-storage/file-storage.service';
 
 @Module({
   imports: [
@@ -26,6 +28,7 @@ import { JwtService } from '@nestjs/jwt';
     UsersController,
     ClientsController,
     TimeSlotsController,
+    FileStorageController,
   ],
   providers: [
     AppService,
@@ -33,6 +36,7 @@ import { JwtService } from '@nestjs/jwt';
     PrismaService,
     ClientsService,
     TimeSlotsService,
+    FileStorageService,
   ],
 })
 export class AppModule implements NestModule {

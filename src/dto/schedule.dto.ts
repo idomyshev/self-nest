@@ -9,6 +9,12 @@ import {
   Min,
 } from 'class-validator';
 
+export class ClientCreateDto {
+  @IsString()
+  @Length(1, 50)
+  name: string;
+}
+
 export class TimeSlotCreateDto {
   @IsNotEmpty()
   @IsInt()
@@ -25,8 +31,8 @@ export class TimeSlotCreateDto {
   clientId: string;
 }
 
-export class ClientCreateDto {
+export class FileCreateDto {
+  @IsNotEmpty()
   @IsString()
-  @Length(1, 50)
-  name: string;
+  data: string;
 }
