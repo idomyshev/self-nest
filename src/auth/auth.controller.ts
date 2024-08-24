@@ -1,5 +1,6 @@
-import { Controller, Post, Request } from '@nestjs/common';
+import { Controller, Get, Post, Request, UseGuards } from '@nestjs/common';
 import { AuthService } from './auth.service';
+import { JwtAuthGuard } from '../jwt-auth/jwt-auth.guard';
 
 @Controller('auth')
 export class AuthController {
@@ -13,5 +14,11 @@ export class AuthController {
     );
 
     return this.authService.login(user);
+  }
+
+  @Get('user')
+  @UseGuards(JwtAuthGuard)
+  async getUser(@Request() req) {
+    return req.user;
   }
 }
