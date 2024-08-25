@@ -11,10 +11,9 @@ import { AuthModule } from './auth/auth.module';
 import { ConfigModule } from '@nestjs/config';
 import { TimeSlotsController } from './time-slot/time-slots.controller';
 import { TimeSlotsService } from './time-slot/time-slots.service';
-import { AuthService } from './auth/auth.service';
-import { JwtService } from '@nestjs/jwt';
 import { FileStorageController } from './file-storage/file-storage.controller';
 import { FileStorageService } from './file-storage/file-storage.service';
+import { EmailService } from './email/email.service';
 
 @Module({
   imports: [
@@ -37,6 +36,7 @@ import { FileStorageService } from './file-storage/file-storage.service';
     ClientsService,
     TimeSlotsService,
     FileStorageService,
+    EmailService,
   ],
 })
 export class AppModule implements NestModule {
