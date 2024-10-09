@@ -1,0 +1,60 @@
+name: Deploy Self-Platform.es API
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  web-deploy:
+    name: Deploy Self-Platform.es API
+    runs-on: ubuntu-latest
+    steps:
+      - name: Get Latest Code
+        uses: actions/checkout@v3
+
+      - name: Prepare Node
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18
+
+      - name: Install packages
+        run: npm ci
+
+      - name: Create env file
+        run: |
+          touch .env
+          echo BCRYPT_ROUND_NUMBER=${{ vars.BCRYPT_ROUND_NUMBER }} >> .env
+          echo CORS_WHITELIST=${{ vars.CORS_WHITELIST }} >> .env
+          echo DOMAIN_NAME=${{ vars.DOMAIN_NAME }} >> .env
+          echo EMAIL_FROM=${{ vars.EMAIL_FROM }} >> .env
+          echo EMAIL_FROM_NAME=${{ vars.EMAIL_FROM_NAME }} >> .env
+          echo FILE_STORAGE_BACKUPS_PATH=${{ vars.FILE_STORAGE_BACKUPS_PATH }} >> .env
+          echo FILE_STORAGE_PATH=${{ vars.FILE_STORAGE_PATH }} >> .env
+          echo GOOGLE_DRIVE_SERVICE_FILE=${{ vars.GOOGLE_DRIVE_SERVICE_FILE }} >> .env
+          echo JWT_EXPIRES_IN=${{ vars.JWT_EXPIRES_IN }} >> .env
+          echo MAILJET_DOMAIN_NAME=${{ vars.MAILJET_DOMAIN_NAME }} >> .env
+          echo MAILJET_EMAIL_FROM=${{ vars.MAILJET_EMAIL_FROM }} >> .env
+          echo MAILJET_EMAIL_FROM_NAME=${{ vars.MAILJET_EMAIL_FROM_NAME }} >> .env
+          echo NODE_ENV=${{ vars.NODE_ENV }} >> .env
+          echo PORT=${{ vars.PORT }} >> .env
+          echo TELEGRAM_UPDATE_METHOD=${{ vars.TELEGRAM_UPDATE_METHOD }} >> .env
+          echo CLOUDFLARE_TURNSTILE_SECRET_KEY=${{ secrets.CLOUDFLARE_TURNSTILE_SECRET_KEY }} >> .env
+          echo DATABASE_URL=${{ secrets.DATABASE_URL }} >> .env
+          echo JWT_SECRET=${{ secrets.JWT_SECRET }} >> .env
+          echo MAILJET_API_KEY=${{ secrets.MAILJET_API_KEY }} >> .env
+          echo MAILJET_SECRET_KEY=${{ secrets.MAILJET_SECRET_KEY }} >> .env
+          cat .env
+
+      - name: Build
+        run: npm run build
+
+      - name: Upload files to remote server
+        uses: easingthemes/ssh-deploy@main
+        with:
+          SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+          SOURCE: "dist/"
+          ARGS: "-rlgoDzvc -i --delete --exclude=.env"
+          REMOTE_HOST: ${{ secrets.REMOTE_HOST }}
+          REMOTE_USER: ${{ secrets.REMOTE_USER }}
+          TARGET: ${{ vars.TARGET_DIR }}

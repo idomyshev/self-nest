@@ -7,52 +7,36 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model User {
-  id             String        @id @default(uuid()) @db.Uuid
-  username       String        @unique @db.VarChar(255)
-  email          String        @unique @db.VarChar(255)
-  firstName      String        @db.VarChar(255)
-  lastName       String        @db.VarChar(255)
-  hash           String        @db.VarChar(60)
-  createdAt      DateTime      @default(now()) @db.Timestamptz(6)
-  updatedAt      DateTime?     @db.Timestamptz(6)
-  config         Json?
-  authCode       String?       @db.VarChar(4)
-  authCodeTime   DateTime?     @db.Timestamptz(6)
-  telegramUserId String?       @unique @db.VarChar(255)
-  active         Boolean?
-  regCode        String?       @db.VarChar(6)
-  regCodeTime    DateTime?     @db.Timestamptz(6)
-  rpCode         String?       @db.Uuid
-  rpCodeTime     DateTime?     @db.Timestamptz(6)
-  clients        Client[]
-  tags           Tag[]
-  tagsOnWords    TagsOnWords[]
-  timeSlots      TimeSlot[]
-  translations   Translation[]
-  words          Word[]
+model Client {
+  createdAt DateTime   @default(now()) @db.Timestamptz(6)
+  id        String     @id @default(uuid()) @db.Uuid
+  name      String     @unique @db.VarChar(255)
+  updatedAt DateTime?  @db.Timestamptz(6)
+  userId    String     @db.Uuid
+  archived  Boolean?
+  user      User       @relation(fields: [userId], references: [id])
+  timeSlots TimeSlot[]
 }
 
-model Word {
-  createdAt    DateTime      @default(now()) @db.Timestamptz(6)
-  id           String        @id @default(uuid()) @db.Uuid
-  title        String        @unique @db.VarChar(255)
-  updatedAt    DateTime?     @db.Timestamptz(6)
-  userId       String        @db.Uuid
-  tags         TagsOnWords[]
-  translations Translation[]
-  user         User          @relation(fields: [userId], references: [id])
+model File {
+  id          String    @id @default(uuid()) @db.Uuid
+  userId      String    @db.Uuid
+  description String    @unique @db.VarChar(255)
+  encrypted   Boolean?
+  parseJson   Boolean?
+  createdAt   DateTime  @default(now()) @db.Timestamptz(6)
+  updatedAt   DateTime? @db.Timestamptz(6)
+  User        User      @relation(fields: [userId], references: [id])
 }
 
-model Translation {
-  id        String    @id @default(uuid()) @db.Uuid
-  text      String    @db.VarChar(1000)
-  createdAt DateTime  @default(now()) @db.Timestamptz(6)
-  updatedAt DateTime? @db.Timestamptz(6)
-  wordId    String    @db.Uuid
-  userId    String    @db.Uuid
-  user      User      @relation(fields: [userId], references: [id])
-  word      Word      @relation(fields: [wordId], references: [id])
+model NotificationToken {
+  id             String       @id @default(uuid()) @db.Uuid
+  telegramBotId  String       @db.Uuid
+  telegramUserId String       @db.Uuid
+  createdAt      DateTime     @default(now()) @db.Timestamptz(6)
+  updatedAt      DateTime?    @db.Timestamptz(6)
+  telegramBot    TelegramBot  @relation(fields: [telegramBotId], references: [id])
+  telegramUser   TelegramUser @relation(fields: [telegramUserId], references: [id])
 }
 
 model Tag {
@@ -63,29 +47,6 @@ model Tag {
   userId    String        @db.Uuid
   user      User          @relation(fields: [userId], references: [id])
   words     TagsOnWords[]
-}
-
-model TagsOnWords {
-  createdAt DateTime @default(now()) @db.Timestamptz(6)
-  tagId     String   @db.Uuid
-  userId    String   @db.Uuid
-  wordId    String   @db.Uuid
-  tag       Tag      @relation(fields: [tagId], references: [id], onDelete: Cascade)
-  user      User     @relation(fields: [userId], references: [id])
-  word      Word     @relation(fields: [wordId], references: [id], onDelete: Cascade)
-
-  @@id([wordId, tagId])
-}
-
-model Client {
-  createdAt DateTime   @default(now()) @db.Timestamptz(6)
-  id        String     @id @default(uuid()) @db.Uuid
-  name      String     @unique @db.VarChar(255)
-  updatedAt DateTime?  @db.Timestamptz(6)
-  userId    String     @db.Uuid
-  archived  Boolean?
-  user      User       @relation(fields: [userId], references: [id])
-  timeSlots TimeSlot[]
 }
 
 model TimeSlot {
@@ -100,6 +61,18 @@ model TimeSlot {
   date      Int?
   client    Client?   @relation(fields: [clientId], references: [id], onDelete: Cascade)
   user      User      @relation(fields: [userId], references: [id])
+}
+
+model TagsOnWords {
+  createdAt DateTime @default(now()) @db.Timestamptz(6)
+  tagId     String   @db.Uuid
+  userId    String   @db.Uuid
+  wordId    String   @db.Uuid
+  tag       Tag      @relation(fields: [tagId], references: [id], onDelete: Cascade)
+  user      User     @relation(fields: [userId], references: [id])
+  word      Word     @relation(fields: [wordId], references: [id], onDelete: Cascade)
+
+  @@id([wordId, tagId])
 }
 
 model TelegramBot {
@@ -120,12 +93,51 @@ model TelegramUser {
   notificationTokens NotificationToken[]
 }
 
-model NotificationToken {
-  id             String       @id @default(uuid()) @db.Uuid
-  telegramBotId  String       @db.Uuid
-  telegramUserId String       @db.Uuid
-  createdAt      DateTime     @default(now()) @db.Timestamptz(6)
-  updatedAt      DateTime?    @db.Timestamptz(6)
-  telegramBot    TelegramBot  @relation(fields: [telegramBotId], references: [id])
-  telegramUser   TelegramUser @relation(fields: [telegramUserId], references: [id])
+model Translation {
+  id        String    @id @default(uuid()) @db.Uuid
+  text      String    @db.VarChar(1000)
+  createdAt DateTime  @default(now()) @db.Timestamptz(6)
+  updatedAt DateTime? @db.Timestamptz(6)
+  wordId    String    @db.Uuid
+  userId    String    @db.Uuid
+  user      User      @relation(fields: [userId], references: [id])
+  word      Word      @relation(fields: [wordId], references: [id])
+}
+
+model User {
+  id             String        @id @default(uuid()) @db.Uuid
+  username       String        @unique @db.VarChar(255)
+  email          String        @unique @db.VarChar(255)
+  firstName      String        @db.VarChar(255)
+  lastName       String        @db.VarChar(255)
+  hash           String        @db.VarChar(60)
+  createdAt      DateTime      @default(now()) @db.Timestamptz(6)
+  updatedAt      DateTime?     @db.Timestamptz(6)
+  config         Json?
+  authCode       String?       @db.VarChar(4)
+  authCodeTime   DateTime?     @db.Timestamptz(6)
+  telegramUserId String?       @unique @db.VarChar(255)
+  active         Boolean?
+  regCode        String?       @db.VarChar(6)
+  regCodeTime    DateTime?     @db.Timestamptz(6)
+  rpCode         String?       @db.Uuid
+  rpCodeTime     DateTime?     @db.Timestamptz(6)
+  clients        Client[]
+  files          File[]
+  tags           Tag[]
+  tagsOnWords    TagsOnWords[]
+  timeSlots      TimeSlot[]
+  translations   Translation[]
+  words          Word[]
+}
+
+model Word {
+  createdAt    DateTime      @default(now()) @db.Timestamptz(6)
+  id           String        @id @default(uuid()) @db.Uuid
+  title        String        @unique @db.VarChar(255)
+  updatedAt    DateTime?     @db.Timestamptz(6)
+  userId       String        @db.Uuid
+  tags         TagsOnWords[]
+  translations Translation[]
+  user         User          @relation(fields: [userId], references: [id])
 }

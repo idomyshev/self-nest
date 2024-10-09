@@ -4,11 +4,23 @@ import { PrismaService } from '../prisma.service';
 @Injectable()
 export class UsersService {
   constructor(private readonly prisma: PrismaService) {}
+
   async findAll() {
-    return this.prisma.user.findMany();
+    return (await this.prisma.user.findMany()).map((item) => {
+      delete item.hash;
+      return item;
+    });
   }
 
-  // create(dto: CreateFlowersDto) {
-  //   return this.prisma.users;
-  // }
+  async findOne(where: any, skipFields?: string[]) {
+    const user = await this.prisma.user.findFirst({ where });
+
+    if (user && skipFields?.length) {
+      for (const field of skipFields) {
+        delete user[field];
+      }
+    }
+
+    return user;
+  }
 }
