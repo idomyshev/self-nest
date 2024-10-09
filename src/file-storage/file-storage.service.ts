@@ -1,15 +1,21 @@
-import { Injectable, InternalServerErrorException } from '@nestjs/common';
+import {
+  Injectable,
+  InternalServerErrorException,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import * as fs from 'fs/promises';
 import { PrismaService } from '../prisma.service';
 import * as fsSync from 'fs';
 import { format } from 'date-fns';
+import { UsersService } from '../users/users.service';
 
 @Injectable()
 export class FileStorageService {
   constructor(
     private configService: ConfigService,
     private prisma: PrismaService,
+    private usersService: UsersService,
   ) {}
 
   async getFileContent(userId: string, fileSourceId: string) {
@@ -37,6 +43,29 @@ export class FileStorageService {
 
       throw new InternalServerErrorException();
     }
+  }
+
+  async getAuthUserFileByType(userId: string, fileType: string) {
+    const user = await this.usersService.findOne({
+      id: userId,
+    });
+
+    if (!user) {
+      throw new UnauthorizedException();
+    }
+
+    const file = await this.prisma.file.findFirst({
+      where: {
+        userId,
+        description: fileType,
+      },
+    });
+
+    if (!file) {
+      return null;
+    }
+
+    return await this.getFileContent(userId, file.id);
   }
 
   async updateFileContent(userId: string, fileSourceId: string, data: string) {

@@ -9,7 +9,7 @@ import {
 } from '@nestjs/common';
 import { JwtAuthGuard } from '../jwt-auth/jwt-auth.guard';
 import { FileStorageService } from './file-storage.service';
-import { IdParamDto } from '../dto/misc.dto';
+import { FileTypeParamDto, IdParamDto } from '../dto/misc.dto';
 import { FileCreateDto } from '../dto/schedule.dto';
 
 @Controller('file-storage')
@@ -20,6 +20,15 @@ export class FileStorageController {
   @UseGuards(JwtAuthGuard)
   getFile(@Param() params: IdParamDto, @Request() req) {
     return this.fileStorageService.getFileContent(req.user.id, params.id);
+  }
+
+  @Get('auth-user-file-by-type/:type')
+  @UseGuards(JwtAuthGuard)
+  getAuthUserFileByType(@Param() params: FileTypeParamDto, @Request() req) {
+    return this.fileStorageService.getAuthUserFileByType(
+      req.user.id,
+      params.type,
+    );
   }
 
   @Put(':id')
