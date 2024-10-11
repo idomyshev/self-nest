@@ -65,7 +65,10 @@ export class FileStorageService {
       return null;
     }
 
-    return await this.getFileContent(userId, file.id);
+    return {
+      id: file.id,
+      data: await this.getFileContent(userId, file.id),
+    };
   }
 
   async updateFileContent(userId: string, fileSourceId: string, data: string) {
