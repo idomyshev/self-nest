@@ -9,10 +9,9 @@ import {
   Put,
   Delete,
 } from '@nestjs/common';
-import { IdParamDto } from '../dto/misc.dto';
+import { ClientCreateDto, IdParamDto } from '../dto/misc.dto';
 import { ClientsService } from './clients.service';
 import { JwtAuthGuard } from '../jwt-auth/jwt-auth.guard';
-import { ClientCreateDto } from '../dto/schedule.dto';
 
 @Controller('clients')
 export class ClientsController {

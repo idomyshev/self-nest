@@ -3,6 +3,7 @@ import {
   Controller,
   Get,
   InternalServerErrorException,
+  NotFoundException,
   Post,
   Request,
   UnprocessableEntityException,
@@ -11,10 +12,17 @@ import {
 import * as bcrypt from 'bcrypt';
 import { AuthService } from './auth.service';
 import { JwtAuthGuard } from '../jwt-auth/jwt-auth.guard';
-import { LoginDto, RegisterDto } from '../dto/schedule.dto';
 import { ConfigService } from '@nestjs/config';
 import { PrismaService } from '../prisma.service';
 import { EmailService } from '../email/email.service';
+import {
+  ChangePasswordDto,
+  ConfirmEmailDto,
+  LoginDto,
+  RegisterDto,
+  RestorePasswordDto,
+} from '../dto/misc.dto';
+import { v4 as uuidv4 } from 'uuid';
 
 @Controller('auth')
 export class AuthController {
@@ -83,7 +91,7 @@ export class AuthController {
         firstName: '', // TODO Do more beutiful.
         lastName: '', // TODO Do more beutiful.
         hash,
-        username: '', // TODO Do more beutiful.
+        username: email,
         email,
         regCode,
         regCodeTime: new Date(),
@@ -108,10 +116,120 @@ export class AuthController {
 
       return { created: true };
     } catch (err) {
-      console.log('MAILJET SEND ERROR', err);
+      console.error('Mailjet confirm email error:', err);
 
       throw new InternalServerErrorException({
         errors: ['Email confirmation code was not sent'],
+      });
+    }
+  }
+
+  @Post('confirm-email')
+  async confirmEmail(@Body() body: ConfirmEmailDto) {
+    const user = await this.prisma.user.findFirst({
+      where: {
+        email: body.email,
+        regCode: body.regCode,
+        active: false,
+      },
+    });
+
+    if (!user) {
+      throw new NotFoundException();
+    }
+
+    await this.prisma.user.update({
+      where: { id: user.id },
+      data: { active: true, regCode: null },
+    });
+
+    return { success: true };
+  }
+
+  @Post('change-password')
+  async changePassword(@Body() body: ChangePasswordDto) {
+    const { email, password, rpCode, token } = body;
+
+    if (!(await this.authService.checkCaptcha(token))) {
+      throw new UnprocessableEntityException({
+        errors: [
+          {
+            path: 'token',
+            customMessage: 'Captcha was not verified',
+          },
+        ],
+      });
+    }
+
+    const salt = bcrypt.genSaltSync(
+      Number(this.configService.get<string>('BCRYPT_ROUND_NUMBER')),
+    );
+
+    const hash = bcrypt.hashSync(password, salt);
+
+    await this.prisma.user.update({
+      where: { email, rpCode },
+      data: { rpCode: null, rpCodeTime: null, hash },
+    });
+
+    return { success: true };
+  }
+
+  @Post('restore-password')
+  async restorePassword(@Body() body: RestorePasswordDto) {
+    const { email, token } = body;
+
+    if (!(await this.authService.checkCaptcha(token))) {
+      throw new UnprocessableEntityException({
+        errors: [
+          {
+            path: 'token',
+            customMessage: 'Captcha was not verified',
+          },
+        ],
+      });
+    }
+
+    const user = await this.prisma.user.findFirst({
+      where: {
+        email: email,
+        active: true,
+      },
+    });
+
+    if (!user) {
+      // We never say to client that this email was not found for security reasons.
+      return { success: true };
+    }
+
+    const rpCode = uuidv4();
+    await this.prisma.user.update({
+      where: { id: user.id },
+      data: { rpCode, rpCodeTime: new Date() },
+    });
+
+    const domainName = this.configService.get<string>('MAILJET_DOMAIN_NAME');
+
+    try {
+      await this.emailService.send(
+        {
+          email: this.configService.get<string>('MAILJET_EMAIL_FROM'),
+          name: this.configService.get<string>('MAILJET_EMAIL_FROM_NAME'),
+        },
+        { email },
+        'Restore Password',
+        '<h4>Dear customer!</h4>' +
+          'We got request to restore your password.' +
+          `<br/><br/>Please, follow <a href="http://${domainName}/changePassword?email=${email}&rpCode=${rpCode}">this link</a> to change your current password` +
+          '<br /><br/>Thanks a lot and hope to see you soon!',
+      );
+
+      return { success: true };
+    } catch (err) {
+      console.error('Restore password code was not sent error:', err);
+
+      throw new InternalServerErrorException({
+        errors: ['Restore password code was not sent'],
       });
     }
   }

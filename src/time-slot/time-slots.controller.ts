@@ -9,8 +9,7 @@ import {
   Request,
   UseGuards,
 } from '@nestjs/common';
-import { TimeSlotCreateDto } from '../dto/schedule.dto';
-import { IdParamDto } from '../dto/misc.dto';
+import { IdParamDto, TimeSlotCreateDto } from '../dto/misc.dto';
 import { TimeSlotsService } from './time-slots.service';
 import { JwtAuthGuard } from '../jwt-auth/jwt-auth.guard';
 

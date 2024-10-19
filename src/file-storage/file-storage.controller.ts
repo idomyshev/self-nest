@@ -9,8 +9,7 @@ import {
 } from '@nestjs/common';
 import { JwtAuthGuard } from '../jwt-auth/jwt-auth.guard';
 import { FileStorageService } from './file-storage.service';
-import { FileTypeParamDto, IdParamDto } from '../dto/misc.dto';
-import { FileCreateDto } from '../dto/schedule.dto';
+import { FileCreateDto, FileTypeParamDto, IdParamDto } from '../dto/misc.dto';
 
 @Controller('file-storage')
 export class FileStorageController {
