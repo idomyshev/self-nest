@@ -54,15 +54,21 @@ export class FileStorageService {
       throw new UnauthorizedException();
     }
 
-    const file = await this.prisma.file.findFirst({
+    let file = await this.prisma.file.findFirst({
       where: {
         userId,
         description: fileType,
       },
     });
 
-    if (!file) {
-      return null;
+    // Initialize credentials file.
+    if (!file && fileType === 'credentials') {
+      file = await this.prisma.file.create({
+        data: {
+          userId,
+          description: fileType,
+        },
+      });
     }
 
     return {
