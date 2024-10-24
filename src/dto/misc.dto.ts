@@ -97,3 +97,9 @@ export class RestorePasswordDto {
   @Length(1, 2048)
   token: string;
 }
+
+export class WordCreateDto {
+  @IsString()
+  @Length(1, 200)
+  title: string;
+}
