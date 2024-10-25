@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma.service';
-import { Client, Word } from '@prisma/client';
+import { Word } from '@prisma/client';
 
 @Injectable()
 export class WordsService {
@@ -12,6 +12,7 @@ export class WordsService {
         include: {
           tags: true,
           translations: true,
+          language: true,
         },
       })
     ).map((item) => {
@@ -20,7 +21,9 @@ export class WordsService {
   }
 
   async findOne(userId: string, id: string) {
-    return this.prisma.client.findFirst({ where: { userId, id } });
+    return this.prisma.client.findFirst({
+      where: { userId, id },
+    });
   }
 
   async createWord(data: Word) {

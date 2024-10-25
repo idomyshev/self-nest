@@ -140,4 +140,13 @@ model Word {
   tags         TagsOnWords[]
   translations Translation[]
   user         User          @relation(fields: [userId], references: [id])
+  languageId    String       @db.Uuid
+  language      Language     @relation(fields: [languageId], references: [id])
+}
+
+model Language {
+  createdAt    DateTime      @default(now()) @db.Timestamptz(6)
+  id           String        @id @default(uuid()) @db.Uuid
+  name         String        @unique @db.VarChar(50)
+  languages    Word[]
 }

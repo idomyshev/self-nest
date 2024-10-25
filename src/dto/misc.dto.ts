@@ -100,6 +100,8 @@ export class RestorePasswordDto {
 
 export class WordCreateDto {
   @IsString()
-  @Length(1, 200)
+  @Length(1, 255)
   title: string;
+  @IsUUID()
+  languageId: string;
 }

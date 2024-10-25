@@ -16,6 +16,8 @@ import { FileStorageService } from './file-storage/file-storage.service';
 import { EmailService } from './email/email.service';
 import { WordsController } from './words/words.controller';
 import { WordsService } from './words/words.service';
+import { LanguagesController } from './languages/languages.controller';
+import { LanguagesService } from './languages/languages.service';
 
 @Module({
   imports: [
@@ -31,6 +33,7 @@ import { WordsService } from './words/words.service';
     TimeSlotsController,
     FileStorageController,
     WordsController,
+    LanguagesController,
   ],
   providers: [
     AppService,
@@ -41,6 +44,7 @@ import { WordsService } from './words/words.service';
     FileStorageService,
     EmailService,
     WordsService,
+    LanguagesService,
   ],
 })
 export class AppModule implements NestModule {
